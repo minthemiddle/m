@@ -10,7 +10,7 @@
 <body class="bg-gray-100" x-data="mailtoGenerator()">
   <div class="container mx-auto px-4 py-8">
     <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-2xl font-bold mb-4">Mailto Link Generator</h2>
+      <h2 class="text-2xl font-bold mb-4">Mailto Link Editor</h2>
       <div class="mb-4">
         <label for="to" class="block font-semibold mb-1">To:</label>
         <input x-model="to" id="to" type="text" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="recipient@example.com">
@@ -24,8 +24,8 @@
         <textarea x-model="body" id="body" rows="4" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="Mail Body"></textarea>
       </div>
       <div class="mb-4">
-        <label for="mailtoCode" class="block font-semibold mb-1">Mailto Code:</label>
-        <textarea id="mailtoCode" rows="6" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" x-text="mailtoCode"></textarea>
+        <label for="mailtoCode" class="block mb-1"><span class="font-bold">Mailto snippet:</span><br><span class="text-xs">Yes, you can paste in mailto's here.</span></label>
+        <textarea id="mailtoCode" rows="6" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" x-model="mailtoCode" x-text="mailtoCode" @input="updateFields"></textarea>
       </div>
       <button class="bg-blue-500 text-white px-4 py-2 rounded" @click="copyMailtoLink">Copy Mailto Link</button>
     </div>
@@ -41,12 +41,25 @@
         subject: '',
         body: '',
         get mailtoCode() {
-          const mailtoFields = {
-            to: this.to,
-            subject: this.subject,
-            body: this.body,
-          };
-          return `mailto:${encodeURIComponent(mailtoFields.to)}?subject=${encodeURIComponent(mailtoFields.subject)}&body=${encodeURIComponent(mailtoFields.body)}`;
+          return `mailto:${encodeURIComponent(this.to)}?subject=${encodeURIComponent(this.subject)}&body=${encodeURIComponent(this.body)}`;
+        },
+        set mailtoCode(value) {
+          const regex = /mailto:(.*?)\?subject=(.*?)&body=(.*)/;
+          const matches = value.match(regex);
+
+          if (matches) {
+            this.to = decodeURIComponent(matches[1]);
+            this.subject = decodeURIComponent(matches[2]);
+            this.body = decodeURIComponent(matches[3]);
+          } else {
+            // If the mailto code is invalid, reset the other fields
+            this.to = '';
+            this.subject = '';
+            this.body = '';
+          }
+        },
+        updateFields() {
+          this.mailtoCode = this.mailtoCode;
         },
         copyMailtoLink() {
           const el = document.createElement('textarea');
