@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mailto Link Generator</title>
+  <!-- Add the CSS link to your Tailwind CSS file -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100" x-data="mailtoGenerator()">
+  <div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold mb-4">Mailto Link Generator</h2>
+      <div class="mb-4">
+        <label for="to" class="block font-semibold mb-1">To:</label>
+        <input x-model="to" id="to" type="text" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="recipient@example.com">
+      </div>
+      <div class="mb-4">
+        <label for="subject" class="block font-semibold mb-1">Subject:</label>
+        <input x-model="subject" id="subject" type="text" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="Mail Subject">
+      </div>
+      <div class="mb-4">
+        <label for="body" class="block font-semibold mb-1">Body:</label>
+        <textarea x-model="body" id="body" rows="4" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" placeholder="Mail Body"></textarea>
+      </div>
+      <div class="mb-4">
+        <label for="mailtoCode" class="block font-semibold mb-1">Mailto Code:</label>
+        <textarea id="mailtoCode" rows="6" class="w-full rounded border px-4 py-2 focus:outline-none focus:ring focus:border-blue-300" x-text="mailtoCode"></textarea>
+      </div>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded" @click="copyMailtoLink">Copy Mailto Link</button>
+    </div>
+  </div>
+
+  <!-- Add the Alpine.js script -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <script>
+    function mailtoGenerator() {
+      return {
+        to: '',
+        subject: '',
+        body: '',
+        get mailtoCode() {
+          const mailtoFields = {
+            to: this.to,
+            subject: this.subject,
+            body: this.body,
+          };
+          return `mailto:${encodeURIComponent(mailtoFields.to)}?subject=${encodeURIComponent(mailtoFields.subject)}&body=${encodeURIComponent(mailtoFields.body)}`;
+        },
+        copyMailtoLink() {
+          const el = document.createElement('textarea');
+          el.value = this.mailtoCode;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+        },
+      };
+    }
+  </script>
+</body>
+</html>
